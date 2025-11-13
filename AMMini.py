@@ -1,5 +1,7 @@
-from pathlib import Path
 import pandas as pd
 
-def load_plate_data():
-  
+# Read names from Faults27x7_var
+with open("Faults27x7_var", "r") as f:
+    names = [line.strip() for line in f.readlines()]
+
+print(len(names))
