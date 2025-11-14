@@ -1,3 +1,4 @@
+"""
 import pandas as pd
 
 
@@ -16,3 +17,20 @@ df = pd.read_csv(
 
 print(df.shape)
 print(df.head())
+print(df.info())
+"""
+
+from ucimlrepo import fetch_ucirepo 
+  
+# fetch dataset 
+steel_plates_faults = fetch_ucirepo(id=198) 
+  
+# data (as pandas dataframes) 
+X = steel_plates_faults.data.features 
+y = steel_plates_faults.data.targets 
+  
+# metadata 
+print(steel_plates_faults.metadata) 
+  
+# variable information 
+print(steel_plates_faults.variables) 
