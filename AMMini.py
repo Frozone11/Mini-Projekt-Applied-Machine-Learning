@@ -48,6 +48,8 @@ X_train, X_test, y_train, y_test = train_test_split(X, y_fault, test_size=0.2, r
 X_train_scaled = StandardScaler().fit_transform(X_train)
 X_test_scaled = StandardScaler().fit_transform(X_test)
 
-print("\nX_train_scaled shape:", X_train_scaled.shape)
+print("\nX_train_scaled shape:", X_train_scaled.shape) # See the shape of the scaled train features 
+
+
 
 
