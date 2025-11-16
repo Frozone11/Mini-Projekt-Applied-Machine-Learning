@@ -6,8 +6,8 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import confusion_matrix
-#from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.model_selection import cross_val_score
+from sklearn.metrics import confusion_matrix, classification_report, roc_curve, auc
 from ucimlrepo import fetch_ucirepo 
 
   
@@ -74,16 +74,51 @@ print(f"\n Model accuracy: {accuracy:.3f}") #The number decides how many decimal
 y_pred = LogReg_model.predict(X_test_scaled)
 cf_matrix = confusion_matrix(y_test, y_pred)
 
+#Classification Report
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+
+# Cross validatiaon
+cv_score = cross_val_score(LogReg_model, X, y_fault, cv=5)
+cross_validation = pd.DataFrame({
+    "Fold Score": cv_score
+})
+print("\nCross Validation:")
+print(cross_validation.describe())
+
+#ROC Curve and AUC
+y_pred_proba = LogReg_model.predict_proba(X_test_scaled)[::,1]
+fpr, tpr, _ = roc_curve(y_test, y_pred_proba)
+roc_auc = auc(fpr, tpr)
+
+# Print coefficients
+coefficients = pd.DataFrame({'Feature': X.columns, 'Coefficient': LogReg_model.coef_[0]})
+coefficients = coefficients.sort_values(by='Coefficient', key=abs, ascending=False)
+print("Model Coefficients:")
+print(coefficients)
 
 
-plt.figure(figsize=(8,6))
+# Visualizing the ROC Curve
+plt.figure(figsize=(8,8))
+plt.plot(fpr, tpr, label=f"AUC = {roc_auc:.3f}", linewidth=2)
+plt.plot([0, 1], [0, 1], linestyle="--", color="grey", label="Random chance")
+plt.title("ROC Curve for Steel Plate Defect Classification")
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.grid(True)
+plt.legend(loc="lower right")
+plt.show()
+
+# Visualizing the Confusion Matrix
+plt.figure(figsize=(8,8))
 sns.heatmap(cf_matrix, annot=True, fmt="d")
 plt.title('Confusion Matrix')
 plt.ylabel('Actual')
 plt.xlabel('Predicted')
 plt.show()
 
-plt.figure(figsize=(8,6))
+# Visualizing the Confusion Matrix in Percentage
+plt.figure(figsize=(8,8))
 sns.heatmap(cf_matrix/np.sum(cf_matrix), annot=True, fmt='.2%', cmap='crest')
 plt.title('Confusion Matrix in Percentage')
 plt.ylabel('Actual')
