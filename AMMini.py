@@ -1,10 +1,12 @@
 
-#import numpy as np
+import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import confusion_matrix
 #from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 from ucimlrepo import fetch_ucirepo 
 
@@ -35,14 +37,17 @@ There are no missing values in the dataset.
 """
 
 # Make a sum of the fault columns to create a binary target variable
-y_fault = (y.sum(axis=1)>0).astype(int) 
+y_fault = (
+    y[["Z_Scratch", "K_Scratch", "Stains", "Dirtiness", "Bumps", "Other_Faults"]].
+    sum(axis=1) > 0
+).astype(int)
 y_fault.name = "defect_steel_plate" # Name the 7 fault columns defect_steel_plate
 
-print(y_fault.value_counts())
-# We can now se the 7 fault collumns have been combined into one
+print(y_fault.value_counts()) # We can see the binary distrubution of the target variable
+
 
 # Make train-test split
-X_train, X_test, y_train, y_test = train_test_split(X, y_fault, test_size=0.25, random_state=42,)
+X_train, X_test, y_train, y_test = train_test_split(X, y_fault, test_size=0.25, random_state=42,stratify=y_fault)
 
 # Scale the train and test features
 X_train_scaled = StandardScaler().fit_transform(X_train)
@@ -55,10 +60,32 @@ LogReg_model = LogisticRegression(random_state=42)
 LogReg_model.fit(X_train_scaled, y_train)
 
 # Prediction for the model and evaluation 
-y_predict = LogReg_model.predict(X_test_scaled)
-accuracy = LogReg_model.score(y_test, y_predict)
-print("\n Model accuracy:", accuracy)
+
+"""
+I keep getting the error, that the data only contains one class. 
+This confused me but i checked and every single data in Pastry is 1.
+So there is never not an error when i use Pastry.
+Therefor i will now do the Machine Learning model without Pastry.
+"""
+accuracy = LogReg_model.score(X_test_scaled, y_test)
+print(f"\n Model accuracy: {accuracy:.3f}") #The number decides how many decimals you want to show
+
+#Confusion Matric
+y_pred = LogReg_model.predict(X_test_scaled)
+cf_matrix = confusion_matrix(y_test, y_pred)
 
 
 
+plt.figure(figsize=(8,6))
+sns.heatmap(cf_matrix, annot=True, fmt="d")
+plt.title('Confusion Matrix')
+plt.ylabel('Actual')
+plt.xlabel('Predicted')
+plt.show()
 
+plt.figure(figsize=(8,6))
+sns.heatmap(cf_matrix/np.sum(cf_matrix), annot=True, fmt='.2%', cmap='crest')
+plt.title('Confusion Matrix in Percentage')
+plt.ylabel('Actual')
+plt.xlabel('Predicted')
+plt.show()
