@@ -30,20 +30,22 @@ print("\n",steel_plates_faults.variables)
 print("\nFeatures shape:", X.shape)
 print("\nTargets shape:", y.shape)
 
-"""
-Here we see that there are 27 features and the last 7 columns are the target variables indicating if there is a fault or not.
-We also see there are 1941 samples.
-There are no missing values in the dataset.
-"""
 
-# Make a sum of the fault columns to create a binary target variable
-y_fault = (
-    y[["Z_Scratch", "K_Scratch", "Stains", "Dirtiness", "Bumps", "Other_Faults"]].
-    sum(axis=1) > 0
-).astype(int)
-y_fault.name = "defect_steel_plate" # Name the 7 fault columns defect_steel_plate
+"""
+Due to there being exactly one fault per steeel plate i will make the binary classification based 
+on what I classify as major and minor faults.
+"""
+# Define two types of faults: removable and non-removable
+minor_faults = ["Pastry", "Stains", "Dirtiness", "Bumps"]
+major_faults = ["Z_Scratch", "K_Scratch", "Other_Faults"]
 
-print(y_fault.value_counts()) # We can see the binary distrubution of the target variable
+# Make a sum of the fault columns to create a binary target variable for major faults
+y_fault = (y[major_faults].sum(axis=1)>0).astype(int)  # major faults = 1, minor only = 0
+
+y_fault.name = "Major_fault" 
+
+# Se the distribution of minor 0 and major 1 faults
+print("HEEEEEEERRRREE:\n",y_fault.value_counts()) 
 
 
 # Make train-test split
@@ -60,13 +62,6 @@ LogReg_model = LogisticRegression(random_state=42)
 LogReg_model.fit(X_train_scaled, y_train)
 
 # Prediction for the model and evaluation 
-
-"""
-I keep getting the error, that the data only contains one class. 
-This confused me but i checked and every single data in Pastry is 1.
-So there is never not an error when i use Pastry.
-Therefor i will now do the Machine Learning model without Pastry.
-"""
 accuracy = LogReg_model.score(X_test_scaled, y_test)
 print(f"\n Model accuracy: {accuracy:.3f}") #The number decides how many decimals you want to show
 
