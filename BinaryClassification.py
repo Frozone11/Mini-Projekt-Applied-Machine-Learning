@@ -58,7 +58,8 @@ X_test_scaled = StandardScaler().fit_transform(X_test)
 print("\nX_train_scaled shape:", X_train_scaled.shape) # See the shape of the scaled train features 
 
 # Here I create and fit the logistic regression model
-LogReg_model = LogisticRegression(random_state=42)
+# Write about hoe the weightet balancing works in the report
+LogReg_model = LogisticRegression(class_weight = "balanced", random_state=42)
 LogReg_model.fit(X_train_scaled, y_train)
 
 # Prediction for the model and evaluation 
