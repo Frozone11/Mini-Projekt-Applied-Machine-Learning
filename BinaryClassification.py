@@ -73,7 +73,11 @@ cf_matrix = confusion_matrix(y_test, y_pred)
 print("\nClassification Report:")
 print(classification_report(y_test, y_pred))
 
-# Cross validatiaon
+"""
+Maybe change cross validation
+Se Lecture_6_LG.ipynb for reference
+"""
+# Cross validatiaon 
 cv_score = cross_val_score(LogReg_model, X, y_fault, cv=5)
 cross_validation = pd.DataFrame({
     "Fold Score": cv_score
