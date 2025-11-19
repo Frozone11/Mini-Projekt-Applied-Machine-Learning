@@ -70,14 +70,17 @@ print(f"\n Model accuracy: {accuracy:.3f}") #The number decides how many decimal
 y_pred = LogReg_model.predict(X_test_scaled)
 cf_matrix = confusion_matrix(y_test, y_pred)
 
+group_names = ['True Neg','False Pos','False Neg','True Pos']
+group_counts = ["{0:0.0f}".format(value) for value in cf_matrix.flatten()]
+group_percentages = ["{0:.2%}".format(value) for value in cf_matrix.flatten() / np.sum(cf_matrix)]
+labels = [f"{v1}\n{v2}\n{v3}" for v1, v2, v3 in zip(group_names, group_counts, group_percentages)]
+labels = np.asarray(labels).reshape(2, 2)
+
 #Classification Report
 print("\nClassification Report:")
 print(classification_report(y_test, y_pred))
 
-"""
-Maybe change cross validation
-Se Lecture_6_LG.ipynb for reference
-"""
+
 # Cross validatiaon 
 cv_score = cross_val_score(LogReg_model, X, y_fault, cv=5)
 cross_validation = pd.DataFrame({
@@ -110,18 +113,9 @@ plt.legend(loc="lower right")
 plt.show()
 
 # Visualizing the Confusion Matrix
-# Use the seaborn totorial to combine the two confusion matrix plots
-plt.figure(figsize=(8,6))
-sns.heatmap(cf_matrix, annot=True, fmt="d")
-plt.title('Confusion Matrix')
-plt.ylabel('Actual')
-plt.xlabel('Predicted')
-plt.show()
-
-# Visualizing the Confusion Matrix in Percentage
-plt.figure(figsize=(8,6))
-sns.heatmap(cf_matrix/np.sum(cf_matrix), annot=True, fmt='.2%', cmap='crest', )
-plt.title('Confusion Matrix in Percentage')
-plt.ylabel('Actual')
-plt.xlabel('Predicted')
+plt.figure(figsize=(8, 6))
+sns.heatmap(cf_matrix, annot=labels, fmt="", cmap='Blues')
+plt.title("Confusion Matrix (Logistic Regression)")
+plt.ylabel("Actual")
+plt.xlabel("Predicted")
 plt.show()
