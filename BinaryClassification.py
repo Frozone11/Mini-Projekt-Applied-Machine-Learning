@@ -110,6 +110,7 @@ plt.legend(loc="lower right")
 plt.show()
 
 # Visualizing the Confusion Matrix
+# Use the seaborn totorial to combine the two confusion matrix plots
 plt.figure(figsize=(8,8))
 sns.heatmap(cf_matrix, annot=True, fmt="d")
 plt.title('Confusion Matrix')

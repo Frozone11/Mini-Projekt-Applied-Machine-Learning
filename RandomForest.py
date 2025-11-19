@@ -5,8 +5,11 @@ from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 import matplotlib.pyplot as plt
 
-# DF
+# RF
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix
+
+#Both DT and RF
 
 #Other 
 from ucimlrepo import fetch_ucirepo 
@@ -58,7 +61,42 @@ print(f"Test accuracy for DT: {accuracy_dt:.2f}")
 print("Classification Report for DT:\n", classification_report(y_test_dt, y_pred_dt, zero_division=0))
 
 # Plot the decision tree
-plt.figure(figsize=(20,10))
+plt.figure(figsize=(30,50))
 plot_tree(DT, feature_names = X_dt.columns.tolist(), class_names = sorted(y_dt.unique()), filled=True)
 plt.title("Decision Tree for Steel Plates Faults")
+#plt.savefig("decision_tree.pdf", format="pdf", bbox_inches='tight')
 plt.show()
+
+#---------------------------------------------------------------------------------------------------------------------
+
+# Now I will create the random forest model
+X_rf = steel_plates_faults.data.features
+y_rf = y1.idxmax(axis=1)
+
+# Create the train test split and scale the features
+X_train_rf, X_test_rf, y_train_rf, y_test_rf = train_test_split(X_rf, y_rf, test_size = 0.25, random_state=42, stratify=y_rf)
+X_train_scaled_rf = StandardScaler().fit_transform(X_train_rf)
+X_test_scaled_rf = StandardScaler().fit_transform(X_test_rf)
+
+# Create and fit the random forest model
+rf = RandomForestClassifier(n_estimators = 100, random_state=42, class_weight = "balanced")
+rf.fit(X_train_scaled_rf, y_train_rf)
+
+# Make predictions of the test set and the probabilities
+y_pred_rf = rf.predict(X_test_scaled_rf)
+y_proba_rf = rf.predict_proba(X_test_scaled_rf)
+
+# Evaluate the performance of the random forest model.
+accuracy_rf = accuracy_score(y_test_rf, y_pred_rf)
+precision_rf = precision_score(y_test_rf, y_pred_rf, average='weighted', zero_division=0)
+recall_rf = recall_score(y_test_rf, y_pred_rf, average='weighted', zero_division=0)
+f1_rf = f1_score(y_test_rf, y_pred_rf, average='weighted', zero_division=0)
+conf_matrix_rf = confusion_matrix(y_test_rf, y_pred_rf)
+
+# Print the results
+print(f"Accuracy: {accuracy_rf:.4f}")
+print(f"Precision: {precision_rf:.4f}")
+print(f"Recall: {recall_rf:.4f}")
+print(f"F1 Score: {f1_rf:.4f}")
+print(f"Confusion Matrix:\n {conf_matrix_rf}")
+
