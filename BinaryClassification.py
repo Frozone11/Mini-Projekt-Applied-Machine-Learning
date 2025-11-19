@@ -119,3 +119,9 @@ plt.title("Confusion Matrix (Logistic Regression)")
 plt.ylabel("Actual")
 plt.xlabel("Predicted")
 plt.show()
+
+# Visualize feature importance
+plt.figure(figsize=(10, 6))
+sns.barplot(x='Coefficient', y='Feature', data=coefficients)
+plt.title('Feature Importance')
+plt.show()
