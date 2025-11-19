@@ -45,7 +45,7 @@ y_fault = (y[major_faults].sum(axis=1)>0).astype(int)  # major faults = 1, minor
 y_fault.name = "Major_fault" 
 
 # Se the distribution of minor 0 and major 1 faults
-print("HEEEEEEERRRREE:\n",y_fault.value_counts()) 
+print("Distribution of minor and major\n",y_fault.value_counts()) 
 
 
 # Make train-test split
@@ -70,6 +70,7 @@ print(f"\n Model accuracy: {accuracy:.3f}") #The number decides how many decimal
 y_pred = LogReg_model.predict(X_test_scaled)
 cf_matrix = confusion_matrix(y_test, y_pred)
 
+# Create labels for the confusion matrix 
 group_names = ['True Neg','False Pos','False Neg','True Pos']
 group_counts = ["{0:0.0f}".format(value) for value in cf_matrix.flatten()]
 group_percentages = ["{0:.2%}".format(value) for value in cf_matrix.flatten() / np.sum(cf_matrix)]

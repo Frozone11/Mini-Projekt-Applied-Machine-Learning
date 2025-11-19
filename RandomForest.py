@@ -1,22 +1,20 @@
 # DT
-from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import cross_val_score, train_test_split
-from sklearn.metrics import accuracy_score, classification_report
-import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 
 # RF
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix
 
-#Both DT and RF
-
-#Other 
-from ucimlrepo import fetch_ucirepo 
-import matplotlib.pyplot as plt
-import seaborn as sns
+# Both DT and RF
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 
+# Other
+from ucimlrepo import fetch_ucirepo
 
 # fetch dataset 
 steel_plates_faults = fetch_ucirepo(id=198) 
@@ -25,11 +23,8 @@ steel_plates_faults = fetch_ucirepo(id=198)
 X_dt = steel_plates_faults.data.features 
 y1 = steel_plates_faults.data.targets 
 
-
-
 # Checking that each steel plate has exactly one fault,\n to varify if a have to do data preprocessing
 print((y1.sum(axis=1) == 1).all())
-
 
 # Convert one-hot encoded targets to single label
 y_dt = y1.idxmax(axis=1)
@@ -49,25 +44,16 @@ X_test_scaled_dt = StandardScaler().fit_transform(X_test_dt)
 # Fit the decision tree model
 DT.fit(X_train_scaled_dt, y_train_dt)
 
-# Predicting with the decision tree model
+# Make predictions of the decision tree test set and the probabilities
 y_pred_dt = DT.predict(X_test_scaled_dt)
+y_proba_dt = DT.predict_proba(X_test_scaled_dt)
 
-#Peform cross validation on the decision tree model
-cv_scores_dt = cross_val_score(DT, X_dt, y_dt, cv=5)
-print(f"Decision tree CV accuracy scores: {cv_scores_dt}")
-print(f"Decission tree mean CV score {cv_scores_dt.mean():.2f} +/- {cv_scores_dt.std():.2f}")
-
-# Model evalation for decision tree
+# Evaluate the performance of the decision tree model.
 accuracy_dt = accuracy_score(y_test_dt, y_pred_dt)
-print(f"Test accuracy for DT: {accuracy_dt:.2f}")
-print("Classification Report for DT:\n", classification_report(y_test_dt, y_pred_dt, zero_division=0))
-
-# Plot the decision tree
-plt.figure(figsize=(30,50))
-plot_tree(DT, feature_names = X_dt.columns.tolist(), class_names = sorted(y_dt.unique()), filled=True)
-plt.title("Decision Tree for Steel Plates Faults")
-#plt.savefig("decision_tree.pdf", format="pdf", bbox_inches='tight')
-plt.show()
+precision_dt = precision_score(y_test_dt, y_pred_dt, average='weighted', zero_division=0)
+recall_dt = recall_score(y_test_dt, y_pred_dt, average='weighted', zero_division=0)
+f1_dt = f1_score(y_test_dt, y_pred_dt, average='weighted', zero_division=0)
+conf_matrix_dt = confusion_matrix(y_test_dt, y_pred_dt)
 
 #---------------------------------------------------------------------------------------------------------------------
 
@@ -95,19 +81,38 @@ recall_rf = recall_score(y_test_rf, y_pred_rf, average='weighted', zero_division
 f1_rf = f1_score(y_test_rf, y_pred_rf, average='weighted', zero_division=0)
 conf_matrix_rf = confusion_matrix(y_test_rf, y_pred_rf)
 
+#---------------------------------------------------------------------------------------------------------------------
+# Prints and visualizations
 # Print the results
-print(f"Accuracy: {accuracy_rf:.4f}")
-print(f"Precision: {precision_rf:.4f}")
-print(f"Recall: {recall_rf:.4f}")
-print(f"F1 Score: {f1_rf:.4f}")
+print(f"Accuracy of Decision Tree: {accuracy_dt:.4f}")
+print(f"Accuracy of Random Forest: {accuracy_rf:.4f}")
+print(f"Precision of Decision Tree: {precision_dt:.4f}")
+print(f"Precision of Random Forest: {precision_rf:.4f}")
+print(f"Recall of Decision Tree: {recall_dt:.4f}")
+print(f"Recall of Random Forest: {recall_rf:.4f}")
+print(f"F1 Score of Decision Tree: {f1_dt:.4f}")
+print(f"F1 Score of Decision Tree: {f1_rf:.4f}")
+print(f"Confusion Matrix:\n {conf_matrix_dt}")
 print(f"Confusion Matrix:\n {conf_matrix_rf}")
 
-
+# Visualizing the Confusion Matrix
 labels = sorted(y_dt.unique())
-conf_matrix_rf = confusion_matrix(y_test_dt, y_pred_rf, labels=labels)
-cm_df = pd.DataFrame(conf_matrix_rf, index=labels, columns=labels)
+conf_matrix_dt = confusion_matrix(y_test_dt, y_pred_dt, labels=labels)
+conf_matrix_rf = confusion_matrix(y_test_rf, y_pred_rf, labels=labels)
+# Create DataFrames for better visualization
+cm_dt = pd.DataFrame(conf_matrix_dt, index=labels, columns=labels)
+cm_rf = pd.DataFrame(conf_matrix_rf, index=labels, columns=labels)
+
 plt.figure(figsize=(10, 8))
-sns.heatmap(cm_df, annot=True, fmt='d', cmap='Blues')
+sns.heatmap(cm_dt, annot=True, fmt='d', cmap='Blues')
+plt.xlabel("Predicted label")
+plt.ylabel("True label")
+plt.title("Confusion Matrix (Decision Tree)")
+plt.show()
+
+
+plt.figure(figsize=(10, 8))
+sns.heatmap(cm_rf, annot=True, fmt='d', cmap='Blues')
 plt.xlabel("Predicted label")
 plt.ylabel("True label")
 plt.title("Confusion Matrix (Random Forest)")
