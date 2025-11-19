@@ -111,7 +111,7 @@ plt.show()
 
 # Visualizing the Confusion Matrix
 # Use the seaborn totorial to combine the two confusion matrix plots
-plt.figure(figsize=(8,8))
+plt.figure(figsize=(8,6))
 sns.heatmap(cf_matrix, annot=True, fmt="d")
 plt.title('Confusion Matrix')
 plt.ylabel('Actual')
@@ -119,8 +119,8 @@ plt.xlabel('Predicted')
 plt.show()
 
 # Visualizing the Confusion Matrix in Percentage
-plt.figure(figsize=(8,8))
-sns.heatmap(cf_matrix/np.sum(cf_matrix), annot=True, fmt='.2%', cmap='crest')
+plt.figure(figsize=(8,6))
+sns.heatmap(cf_matrix/np.sum(cf_matrix), annot=True, fmt='.2%', cmap='crest', )
 plt.title('Confusion Matrix in Percentage')
 plt.ylabel('Actual')
 plt.xlabel('Predicted')

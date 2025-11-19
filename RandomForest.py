@@ -14,6 +14,8 @@ from sklearn.metrics import precision_score, recall_score, f1_score, confusion_m
 #Other 
 from ucimlrepo import fetch_ucirepo 
 import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 
 
 # fetch dataset 
@@ -99,4 +101,15 @@ print(f"Precision: {precision_rf:.4f}")
 print(f"Recall: {recall_rf:.4f}")
 print(f"F1 Score: {f1_rf:.4f}")
 print(f"Confusion Matrix:\n {conf_matrix_rf}")
+
+
+labels = sorted(y_dt.unique())
+conf_matrix_rf = confusion_matrix(y_test_dt, y_pred_rf, labels=labels)
+cm_df = pd.DataFrame(conf_matrix_rf, index=labels, columns=labels)
+plt.figure(figsize=(10, 8))
+sns.heatmap(cm_df, annot=True, fmt='d', cmap='Blues')
+plt.xlabel("Predicted label")
+plt.ylabel("True label")
+plt.title("Confusion Matrix (Random Forest)")
+plt.show()
 
