@@ -35,13 +35,12 @@ print("\nTargets shape:", y.shape)
 Due to there being exactly one fault per steeel plate i will make the binary classification based 
 on what I classify as major and minor faults.
 """
-# Define two types of faults: removable and non-removable
+# Define two types of faults: minor and major
 minor_faults = ["Pastry", "Stains", "Dirtiness", "Bumps"]
 major_faults = ["Z_Scratch", "K_Scratch", "Other_Faults"]
 
 # Make a sum of the fault columns to create a binary target variable for major faults
 y_fault = (y[major_faults].sum(axis=1)>0).astype(int)  # major faults = 1, minor only = 0
-
 y_fault.name = "Major_fault" 
 
 # Se the distribution of minor 0 and major 1 faults

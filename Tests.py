@@ -21,3 +21,5 @@ y_binary.name = "fault_importance_binary"
 print("Class distribution:")
 print(y_binary.value_counts())
 print(y["Bumps"].value_counts())
+
+print(y.idxmax(axis=1))
